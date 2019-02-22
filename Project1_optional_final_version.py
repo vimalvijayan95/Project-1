@@ -82,10 +82,10 @@ lmb_values = [1e-4, 1e-3, 1e-2, 10, 1e2, 1e4]
 for lam in lmb_values:
     betaRidge = np.linalg.inv(X.T.dot(X)+ lam*np.identity(X.shape[1])).dot(X.T).dot(terrain1.ravel())
     
-    hfitRidge=X.dot(betaRidge).reshape(len(terrain1),len(terrain1))
+    fitRidge=X.dot(betaRidge).reshape(len(terrain1),len(terrain1))
     
-    mseRidge=mean_squared_error(terrain1, hfitRidge)
-    r2Ridge=r2_score(terrain1, hfitRidge)
+    mseRidge=mean_squared_error(terrain1, fitRidge)
+    r2Ridge=r2_score(terrain1, fitRidge)
     
     #MSE and R2
     print("R2 score for Ridge regression without resampling:", r2Ridge)
