@@ -13,7 +13,7 @@ from matplotlib import cm
 # Load the terrain
 terrain1 = imread('SRTM_data_Madrid.tif')
 
-'''
+
 # Show the terrain
 plt.figure()
 plt.title('Terrain over Madrid')
@@ -21,7 +21,7 @@ plt.imshow(terrain1, cmap='gray')
 plt.xlabel('X')
 plt.ylabel('Y')
 plt.show()
-'''
+
 y = np.arange(0, len(terrain1))
 x = np.arange(0, len(terrain1[0]))
 x, y = np.meshgrid(x,y)
@@ -29,12 +29,13 @@ x, y = np.meshgrid(x,y)
 #Plotting the 3D figure
 real = plt.figure()
 ax = real.gca(projection='3d')
+ax.set_title('Real data')
 surf = ax.plot_surface(x, y, terrain1, cmap=cm.coolwarm,
                        linewidth=0, antialiased=False)
 
-ax.set_xlabel("x")
-ax.set_ylabel("y")
-ax.set_zlabel("z")
+ax.set_xlabel('Position $x$')
+ax.set_ylabel('Position $y$')
+ax.set_zlabel("Terrain Height")
 plt.show()
 
 # OLS regression 
@@ -46,7 +47,7 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LinearRegression
 
-poly = PolynomialFeatures(degree=5) 
+poly = PolynomialFeatures(degree=11) 
 X = poly.fit_transform(np.c_[x.ravel(), y.ravel()]) # Design Matrix
 beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(terrain1.ravel()) #beta to calculate the solution
 zfit = X.dot(beta).reshape(len(terrain1),len(terrain1))
@@ -59,12 +60,12 @@ zfit = X.dot(beta).reshape(len(terrain1),len(terrain1))
 #plot of the fitted polynomial
 fit = plt.figure()
 ax = fit.gca(projection='3d')
+ax.set_title('Fitted data with polynomial')
 surfit = ax.plot_surface(x, y, zfit, cmap=cm.coolwarm,
                        linewidth=0, antialiased=False)
-ax.set_xlabel("x")
-ax.set_ylabel("y")
-ax.set_zlabel("z")
-
+ax.set_xlabel('Position $x$')
+ax.set_ylabel('Position $y$')
+ax.set_zlabel("Terrain Height")
 plt.show()
 
 #MSE and R2 score
@@ -72,7 +73,6 @@ mse=mean_squared_error(terrain1, zfit)
 print("MSE with OLS no resampling",mse)
 r2=r2_score(terrain1, zfit)
 print("R2 score with OLS no resampling",r2)
-
 
 
 # Ridge without resampling
