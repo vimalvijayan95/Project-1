@@ -47,7 +47,7 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LinearRegression
 
-poly = PolynomialFeatures(degree=11) 
+poly = PolynomialFeatures(degree=9) 
 X = poly.fit_transform(np.c_[x.ravel(), y.ravel()]) # Design Matrix
 beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(terrain1.ravel()) #beta to calculate the solution
 zfit = X.dot(beta).reshape(len(terrain1),len(terrain1))
