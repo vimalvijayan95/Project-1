@@ -1,178 +1,93 @@
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from imageio import imread
-from mpl_toolkits.mplot3d import Axes3D
-from sklearn.model_selection import KFold
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Feb 21 00:09:02 2019
+
+@author: andrea
+"""
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from imageio import imread
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+from matplotlib import cm
+
+# Load the terrain
+terrain1 = imread('SRTM_data_Madrid.tif')
+
+'''
+# Show the terrain
+plt.figure()
+plt.title('Terrain over Madrid')
+plt.imshow(terrain1, cmap='gray')
+plt.xlabel('X')
+plt.ylabel('Y')
+plt.show()
+'''
+y = np.arange(0, len(terrain1))
+x = np.arange(0, len(terrain1[0]))
+x, y = np.meshgrid(x,y)
+
+#Plotting the 3D figure
+real = plt.figure()
+ax = real.gca(projection='3d')
+surf = ax.plot_surface(x, y, terrain1, cmap=cm.coolwarm,
+                       linewidth=0, antialiased=False)
+
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+ax.set_zlabel("z")
+plt.show()
+
+# OLS regression 
+
 from sklearn.preprocessing import PolynomialFeatures
-from sklearn.metrics import r2_score
+from sklearn import linear_model
 from sklearn.metrics import mean_squared_error
-from sklearn.linear_model import Ridge
-from sklearn.linear_model import Lasso
+from sklearn.metrics import r2_score
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LinearRegression
 
-def model_fit(xtrain, ytrain, ztrain, X_c, model):
-    # sigma is changed when we apply noise
-    # resampling - we get betas variance
-    if str(model) == str(linreg):
-        Xtrain = poly.fit_transform(X_c)
-    else:
-        Xtrain = poly.fit_transform(X_c)[:,1:]
-    model.fit(Xtrain, ztrain)
-    Zpredict = model.predict(Xtrain)
-    MSE = mean_squared_error(ztrain, Zpredict)
-    r2 = r2_score(ztrain, Zpredict) 
+poly = PolynomialFeatures(degree=5) 
+X = poly.fit_transform(np.c_[x.ravel(), y.ravel()]) # Design Matrix
+beta = np.linalg.inv(X.T.dot(X)).dot(X.T).dot(terrain1.ravel()) #beta to calculate the solution
+zfit = X.dot(beta).reshape(len(terrain1),len(terrain1))
+
+#clf2 = LinearRegression()
+#clf2.fit(XY, terrain) - automatic calculation using sklearn crashes in the computer
+#zfit = clf2.predict(XY)
+
+
+#plot of the fitted polynomial
+fit = plt.figure()
+ax = fit.gca(projection='3d')
+surfit = ax.plot_surface(x, y, zfit, cmap=cm.coolwarm,
+                       linewidth=0, antialiased=False)
+ax.set_xlabel("x")
+ax.set_ylabel("y")
+ax.set_zlabel("z")
+
+plt.show()
+
+#MSE and R2 score
+mse=mean_squared_error(terrain1, zfit)
+print("MSE with OLS no resampling",mse)
+r2=r2_score(terrain1, zfit)
+print("R2 score with OLS no resampling",r2)
+
+
+
+# Ridge without resampling
+
+lmb_values = [1e-4, 1e-3, 1e-2, 10, 1e2, 1e4]
+
+for lam in lmb_values:
+    betaRidge = np.linalg.inv(X.T.dot(X)+ lam*np.identity(X.shape[1])).dot(X.T).dot(terrain1.ravel())
     
-    print("\nMSE for Zpredict = %s" % str(MSE))
-    print("\nR2 score for Zpredict = %s" % str(r2))
+    hfitRidge=X.dot(betaRidge).reshape(len(terrain1),len(terrain1))
     
-
-def plot(x, y, z):
-    fig = plt.figure()
-    ax = fig.gca(projection="3d")
-    # Plot the surface
-    surf = ax.plot_surface(
-        x, y, z.reshape(*x.shape), cmap=cm.coolwarm, linewidth=0, antialiased=False
-    )
-
-    # Customize the z axis.
-    ax.set_zlim(0.0, 5.0)
-    ax.zaxis.set_major_locator(LinearLocator(10))
-    ax.zaxis.set_major_formatter(FormatStrFormatter("%.02f"))
-
-    # Add a color bar which maps values to colors.
-    fig.colorbar(surf, shrink=0.5, aspect=5)
-    ax.set_xlabel("X")
-    ax.set_ylabel("Y")
-    ax.set_zlabel("Height")
-    ax.set_title("Madrid terrain (training)")
-
-    plt.show()
-
-def linreg_resample(X_c, xtrain, ytrain, ztrain):
-    mse_KFold = np.zeros((k))
-    R2_KFold = np.zeros((k))
-
-    j = 0
-    for train_inds, test_inds in kfold.split(X_c):
-        xtrain_cv = X_c[train_inds]
-        ztrain_cv = ztrain[train_inds]
-
-        xtest_cv = X_c[test_inds]
-        ztest_cv = ztrain[test_inds]
-
-        Xtrain_fit = poly.fit_transform(xtrain_cv)
-        linreg.fit(Xtrain_fit, ztrain_cv)
-
-        Xtest_fit = poly.fit_transform(xtest_cv)
-        zpred = linreg.predict(Xtest_fit)
-
-        mse_KFold[j] = mean_squared_error(ztest_cv, zpred)
-        R2_KFold[j] = r2_score(ztest_cv, zpred)
-
-        j += 1
-
-    estimated_mse_KFold = np.mean(mse_KFold)
-    estimated_R2_KFold = np.mean(R2_KFold)
-
-    print(
-        "\nMSE for Zpredict= %s" % str(estimated_mse_KFold),
-        "\nR2_score for Zpredict= %s" % str(estimated_R2_KFold),
-    )
-
-#loop over different values of lambda is left in case there's need to check it again
-#that's why this function is not combined with the previous function as it would
-#require many "if" conditions
+    mseRidge=mean_squared_error(terrain1, hfitRidge)
+    r2Ridge=r2_score(terrain1, hfitRidge)
     
-def model_resample(k, lambdas, X_c, xtrain, ytrain, ztrain, model):
+    #MSE and R2
+    print("R2 score for Ridge regression without resampling:", r2Ridge)
+    print("MSE for Ridge regression without resampling:", mseRidge)
 
-    nlambdas = len(lambdas)
-    mse_KFold = np.zeros((nlambdas, k))
-    R2_KFold = np.zeros((nlambdas, k))
-
-    l = 0
-    for lmb in lambdas:
-        print("\nLamda:%s" % str(lambdas[l]))
-        model_type = model(alpha=lmb)
-        j = 0
-        for train_inds, test_inds in kfold.split(X_c):
-            xtrain_cv = X_c[train_inds]
-            ztrain_cv = ztrain[train_inds]
-
-            xtest_cv = X_c[test_inds]
-            ztest_cv = ztrain[test_inds]
-
-            Xtrain_fit = poly.fit_transform(xtrain_cv)[:, 1:]
-            model_type.fit(Xtrain_fit, ztrain_cv)
-
-            Xtest_fit = poly.fit_transform(xtest_cv)[:, 1:]
-            zpred = model_type.predict(Xtest_fit)
-
-            mse_KFold[l, j] = mean_squared_error(ztest_cv, zpred)
-            R2_KFold[l, j] = r2_score(ztest_cv, zpred)
-
-            j += 1
-             
-        estimated_mse_KFold = np.mean(mse_KFold, axis=1)
-        estimated_R2_KFold = np.mean(R2_KFold, axis=1)
-        print(
-            "\nMSE for Zpredict (%s) = %s"
-            % (str(model.__name__), str(estimated_mse_KFold[l])),
-            "\nR2 score for Zpredict (%s) = %s"
-            % (str(model.__name__), str(estimated_R2_KFold[l])),
-        )
-        l += 1
-
-# Make data
-np.random.seed(42)
-xtrain = np.random.rand(3601, 1)
-ytrain = np.random.rand(3601, 1)
-ztrain = imread('SRTM_data_Madrid.tif')
-X_c = np.c_[xtrain, ytrain]
-
-d = 2
-k = 2
-lambdas = [1e-7]
-
-linreg = LinearRegression()
-kfold = KFold(n_splits=k)
-ridge = Ridge()
-lasso = Lasso()
-poly = PolynomialFeatures(degree=d)
-
-
-print("\nDegree:%s"
-    % str(d))
-
-print("\nOrdinary Least Squares (no resampling):")
-model_fit(xtrain, ytrain, ztrain, X_c, linreg)
-
-#for plots
-
-xnew, ynew = np.meshgrid(xtrain, ytrain)
-Xnew = poly.fit_transform(np.c_[xnew.ravel(), ynew.ravel()])
-zpredict = linreg.predict(Xnew)
-
-plot(xnew,ynew,zpredict)
-
-
-print("\nOrdinary Least Squares with %s-fold Cross-Validation:"
-    % str(k))
-linreg_resample(X_c, xtrain, ytrain, ztrain)
-
-print("\nLambda:%s" % str(lambdas[0]))
-
-print("\nRidge (no resampling):")
-model_fit(xtrain, ytrain, ztrain, X_c, ridge)
-
-print("\nRidge regression with %s-fold Cross-Validation:"
-    % str(k))
-model_resample(k, lambdas, X_c, xtrain, ytrain, ztrain, ridge)
-
-print("\Lasso (no resampling):")
-model_fit(xtrain, ytrain, ztrain, X_c, lasso)
-
-print("\nLasso regression with %s-fold Cross-Validation:"
-    % str(k))
-model_resample(k, lambdas, X_c, xtrain, ytrain, ztrain, lasso)
