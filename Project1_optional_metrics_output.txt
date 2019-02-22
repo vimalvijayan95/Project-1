@@ -1,0 +1,123 @@
+
+runfile('/Users/vasily/Documents/GitHub/Project1/madrid.py', wdir='/Users/vasily/Documents/GitHub/Project1')
+
+Degree:20
+
+Ordinary Least Squares (no resampling):
+
+MSE for Zpredict = 57080.96220343973
+
+R2 score for Zpredict = 0.05483815123764981
+
+Ridge (no resampling):
+
+MSE for Zpredict = 60060.19997376511
+
+R2 score for Zpredict = 0.004474693064595182
+
+Ordinary Least Squares with 5-fold Cross-Validation:
+
+MSE for Zpredict= 96389.25416843055 
+R2_score for Zpredict= -52.43085119064576
+
+Ridge regression with 5-fold Cross-Validation:
+
+Lamda:1e-06
+
+MSE for Zpredict (Ridge) = 88114.04400352995 
+R2 score for Zpredict (Ridge) = -42.1120224732681
+
+runfile('/Users/vasily/Documents/GitHub/Project1/madrid.py', wdir='/Users/vasily/Documents/GitHub/Project1')
+
+Degree:50
+
+Ordinary Least Squares (no resampling):
+
+MSE for Zpredict = 53149.89956252934
+
+R2 score for Zpredict = 0.11695395456102876
+
+Ridge (no resampling):
+
+MSE for Zpredict = 59935.1394893526
+
+R2 score for Zpredict = 0.00663578580986796
+
+Ordinary Least Squares with 5-fold Cross-Validation:
+
+MSE for Zpredict= 18573654.9527594 
+R2_score for Zpredict= -3841.8685898757076
+
+Ridge regression with 5-fold Cross-Validation:
+
+Lamda:1e-06
+
+MSE for Zpredict (Ridge) = 88998.7661165973 
+R2 score for Zpredict (Ridge) = -43.146709447039754
+
+runfile('/Users/vasily/Documents/GitHub/Project1/madrid.py', wdir='/Users/vasily/Documents/GitHub/Project1')
+
+Degree:100
+
+Ordinary Least Squares (no resampling):
+
+MSE for Zpredict = 55342.89179192539
+
+R2 score for Zpredict = 0.08786942390150852
+
+Ridge (no resampling):
+
+MSE for Zpredict = 59891.09294384182
+
+R2 score for Zpredict = 0.007484473148069655
+
+Ordinary Least Squares with 5-fold Cross-Validation:
+
+MSE for Zpredict= 99940487416756.5 
+R2_score for Zpredict= -15494461868.748575
+
+Ridge regression with 5-fold Cross-Validation:
+
+Lamda:1e-06
+
+MSE for Zpredict (Ridge) = 105368.31149675297 
+R2 score for Zpredict (Ridge) = -58.75799507427136
+
+runfile('/Users/vasily/Documents/GitHub/Project1/madrid.py', wdir='/Users/vasily/Documents/GitHub/Project1')
+
+Degree:200
+
+Ordinary Least Squares (no resampling):
+
+MSE for Zpredict = 48312.81589337158
+
+R2 score for Zpredict = 0.19605487743926373
+
+runfile('/Users/vasily/Documents/GitHub/Project1/madrid.py', wdir='/Users/vasily/Documents/GitHub/Project1')
+
+Degree:20
+\Lasso (no resampling):
+
+MSE for Zpredict = 60310.872212299815
+
+R2 score for Zpredict = 0.00032277016956447905
+
+
+runfile('/Users/vasily/Documents/GitHub/Project1/madrid.py', wdir='/Users/vasily/Documents/GitHub/Project1')
+
+Degree:50
+\Lasso (no resampling):
+
+MSE for Zpredict = 60310.872212299815
+
+R2 score for Zpredict = 0.00032277016956447905
+
+runfile('/Users/vasily/Documents/GitHub/Project1/madrid.py', wdir='/Users/vasily/Documents/GitHub/Project1')
+
+Degree:100
+\Lasso (no resampling):
+
+MSE for Zpredict = 60310.872212299815
+
+R2 score for Zpredict = 0.00032277016956447905
+
