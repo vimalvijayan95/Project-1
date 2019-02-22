@@ -23,7 +23,7 @@ plt.ylabel('Y')
 plt.show()
 
 y = np.arange(0, len(terrain1))
-x = np.arange(0, len(terrain1[0]))
+x = np.arange(0, len(terrain1))
 x, y = np.meshgrid(x,y)
 
 #Plotting the 3D figure
